@@ -1,0 +1,32 @@
+datasource db {
+    url = env("DATABASE_URL")
+    provider = "postgresql"
+}
+
+generator create {
+    provider = "prisma-client-js"
+    previewFeatures = ["postgresqlExtensions"]
+}
+
+model Author {
+    id   String @map("id")   @db.Uuid        @default(uuid())
+    name String @map("name") @db.VarChar(32) 
+
+    books Book[]
+
+    @@id([ id ])
+    @@map("authors")
+}
+
+model Book {
+    id        String   @map("id")         @db.Uuid        @default(uuid())
+    title     String   @map("title")      @db.VarChar(64) 
+    price     String   @map("price")      @db.VarChar(64) 
+    authorId  String   @map("author_id")  @db.Uuid
+    createdAt DateTime @map("created_at")                 @default(now())
+
+    author    Author   @relation(fields: [authorId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+    @@id([ id ])
+    @@map("books")
+}
